@@ -12,6 +12,8 @@ class Faq(models.Model):
 
 	def __str__(self):
 		return self.quest
+     
+
 
 
 class Contact(models.Model):
@@ -57,6 +59,30 @@ class MembershipPlan(models.Model):
 
     def __int__(self):
         return self.id
+    
+
+
+from django.contrib.auth.models import User
+
+class Notify(models.Model):
+	notify_detail=models.TextField()
+	read_by_user=models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
+	read_by_trainer=models.ForeignKey(Trainer, on_delete=models.CASCADE,null=True,blank=True)
+
+	def __str__(self):
+		return str(self.notify_detail)
+     
+
+class NotifUserStatus(models.Model):
+	notif=models.ForeignKey(Notify, on_delete=models.CASCADE)
+	user=models.ForeignKey(User, on_delete=models.CASCADE)
+	status=models.BooleanField(default=False)
+
+	class Meta:
+		verbose_name_plural='Notification Status'
+     
+
+
 
 
 class Equipments(models.Model):

@@ -21,6 +21,8 @@ def faq(request):
         return redirect('/faq')
     return render(request, "faq.html")
 
+
+
 def profile(request):
     if not request.user.is_authenticated:
         messages.warning(request,"Please Login and Try Again")
@@ -136,6 +138,45 @@ def enroll(request):
         messages.success(request,"Thanks For Enrolling")
         return redirect('/join')
     return render(request,"enroll.html",context)
+
+from authapp.models import Notify
+from authapp.models import NotifUserStatus
+from django.http import JsonResponse
+from django.shortcuts import render
+
+def notifs(request):
+    notifications = Notify.objects.all().order_by('-id')  # Fetch all notifications
+    return render(request, 'notifs.html', {'notifications': notifications})
+
+
+def get_notifs(request):
+	data=models.Notify.objects.all().order_by('-id')
+	notifStatus=False
+	jsonData=[]
+	totalUnread=0
+	for d in data:
+		try:
+			notifStatusData=models.NotifUserStatus.objects.get(user=request.user,notif=d)
+			if notifStatusData:
+				notifStatus=True
+		except models.NotifUserStatus.DoesNotExist:
+			notifStatus=False
+		if not notifStatus:
+			totalUnread=totalUnread+1
+		jsonData.append({
+				'pk':d.id,
+				'notify_detail':d.notify_detail,
+				'notifStatus':notifStatus
+			})
+	# jsonData=serializers.serialize('json', data)
+	return JsonResponse({'data':jsonData,'totalUnread':totalUnread})
+
+def mark_read_notif(request):
+	notif=request.GET['notif']
+	notif=models.Notify.objects.get(pk=notif)
+	user=request.user
+	models.NotifUserStatus.objects.create(notif=notif,user=user,status=True)
+	return JsonResponse({'bool':True})
 
 
 def equipments(request):
