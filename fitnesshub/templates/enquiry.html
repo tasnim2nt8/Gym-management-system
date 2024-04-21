@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enquiries</title>
+</head>
+<body>
+    <h1>Enquiries</h1>
+    <a href="{% url 'enquiry:enquiry_create' %}">Create New Enquiry</a>
+    <ul>
+        {% for enquiry in enquiries %}
+            <li>
+                <a href="{% url 'enquiry:enquiry_detail' enquiry.id %}">{{ enquiry.subject }}</a>
+            </li>
+        {% empty %}
+            <li>No enquiries yet.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

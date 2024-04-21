@@ -3,7 +3,7 @@ from . import models
 from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login,logout
-from authapp.models import Contact,MembershipPlan,Trainer,Enrollment,Equipments,Attendance,Service,Appointment,Payment,Faq
+from authapp.models import Contact,MembershipPlan,Trainer,Enrollment,Equipments,Attendance,Service,Appointment,Payment,FAQ
 from datetime import timedelta
 
 
@@ -12,14 +12,45 @@ from datetime import timedelta
 def Home(request):
     return render(request,"index.html")
 
+from .models import FAQ
 def faq(request):
-    if request.method == "POST":
-        quest = request.POST.get('quest')
-        myquery = Faq.objects.create(quest=quest)  # Create Faq object
-        myquery.save()       
-        messages.info(request,"Thanks for Contacting us we will get back to you soon")
-        return redirect('/faq')
-    return render(request, "faq.html")
+    # Retrieve all frequently asked questions from the database
+    faqs = FAQ.objects.all()
+    
+    # Pass the FAQ objects to the template for rendering
+    return render(request, 'faq.html', {'faqs': faqs})
+
+
+
+from .models import Enquiry
+def Add_Enquiry(request):
+    error = ""
+    if not request.user.is_staff:
+        return redirect('login')
+    if request.method == 'POST':
+        n = request.POST['name']
+        c = request.POST['contact']
+        e = request.POST['emailid']
+        a = request.POST['age']
+        g = request.POST['gender']
+        try:
+            Enquiry.objects.create(
+                name=n, contact=c, emailid=e, age=a, gender=g)
+            error = "no"
+        except:
+            error = "yes"
+    d = {'error': error}
+    return render(request, 'add_enquiry.html', d)
+
+
+def View_Enquiry(request):
+    enq = Enquiry.objects.all()
+    d = {'enq': enq}
+    return render(request, 'view_enquiry.html', d)
+def Delete_Enquiry(request,pid):
+    enquiry = Enquiry.objects.get(id=pid)
+    enquiry.delete()
+    return redirect('view_enquiry')
 
 
 
@@ -139,44 +170,12 @@ def enroll(request):
         return redirect('/join')
     return render(request,"enroll.html",context)
 
-from authapp.models import Notify
-from authapp.models import NotifUserStatus
-from django.http import JsonResponse
-from django.shortcuts import render
 
-def notifs(request):
-    notifications = Notify.objects.all().order_by('-id')  # Fetch all notifications
-    return render(request, 'notifs.html', {'notifications': notifications})
+from .models import Notification
+def view_notifications(request):
+    notifications = Notification.objects.all()
+    return render(request, 'notifications.html', {'notifications': notifications})
 
-
-def get_notifs(request):
-	data=models.Notify.objects.all().order_by('-id')
-	notifStatus=False
-	jsonData=[]
-	totalUnread=0
-	for d in data:
-		try:
-			notifStatusData=models.NotifUserStatus.objects.get(user=request.user,notif=d)
-			if notifStatusData:
-				notifStatus=True
-		except models.NotifUserStatus.DoesNotExist:
-			notifStatus=False
-		if not notifStatus:
-			totalUnread=totalUnread+1
-		jsonData.append({
-				'pk':d.id,
-				'notify_detail':d.notify_detail,
-				'notifStatus':notifStatus
-			})
-	# jsonData=serializers.serialize('json', data)
-	return JsonResponse({'data':jsonData,'totalUnread':totalUnread})
-
-def mark_read_notif(request):
-	notif=request.GET['notif']
-	notif=models.Notify.objects.get(pk=notif)
-	user=request.user
-	models.NotifUserStatus.objects.create(notif=notif,user=user,status=True)
-	return JsonResponse({'bool':True})
 
 
 def equipments(request):
@@ -238,3 +237,6 @@ def payment_page(request):
     price = request.GET.get('price')
     print("Price:", price)  # Add this line for debugging
     return render(request, 'payment.html', {'price': price})
+
+
+

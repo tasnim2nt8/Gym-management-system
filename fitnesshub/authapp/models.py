@@ -6,14 +6,26 @@ from datetime import datetime
 def __str__(self):
 	return self.title
 
+from django.utils.timezone import now
+class FAQ(models.Model):
+    question = models.CharField(max_length=255, default=now)
+    answer = models.TextField()
 
-class Faq(models.Model):
-	quest=models.TextField()
+    def __str__(self):
+        return self.question
 
-	def __str__(self):
-		return self.quest
      
 
+
+class Enquiry(models.Model):
+    name = models.CharField(max_length=60)
+    contact = models.CharField(max_length=10)
+    emailid = models.CharField(max_length=60)
+    age = models.CharField(max_length=40)
+    gender = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
 
 
 class Contact(models.Model):
@@ -64,22 +76,17 @@ class MembershipPlan(models.Model):
 
 from django.contrib.auth.models import User
 
-class Notify(models.Model):
-	notify_detail=models.TextField()
-	read_by_user=models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
-	read_by_trainer=models.ForeignKey(Trainer, on_delete=models.CASCADE,null=True,blank=True)
+from django.db import models
+from django.utils import timezone
 
-	def __str__(self):
-		return str(self.notify_detail)
-     
+class Notification(models.Model):
+    title = models.CharField(max_length=100)
+    message = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
 
-class NotifUserStatus(models.Model):
-	notif=models.ForeignKey(Notify, on_delete=models.CASCADE)
-	user=models.ForeignKey(User, on_delete=models.CASCADE)
-	status=models.BooleanField(default=False)
+    def __str__(self):
+        return self.title
 
-	class Meta:
-		verbose_name_plural='Notification Status'
      
 
 
@@ -142,4 +149,7 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment for {self.equipment.title} by {self.user.username}"
+    
+
+
 

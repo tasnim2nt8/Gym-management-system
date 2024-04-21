@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ</title>
+    <title>Notifications</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-image: url('https://media.istockphoto.com/id/1322158059/photo/dumbbell-water-bottle-towel-on-the-bench-in-the-gym.jpg?s=612x612&w=0&k=20&c=CIdh6LPGwU6U6lbvKCdd7LcppidaYwcDawXJI-b0yGE=');
+            background-image: url('https://img.freepik.com/free-photo/3d-gym-equipment_23-2151114163.jpg');
             background-repeat: no-repeat;
             background-size: cover;
         }
@@ -43,15 +43,18 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header text-center">
-                    <h1>Frequently Asked Questions</h1>
+                    <h1>Notifications</h1>
                 </div>
                 <div class="card-body">
                     <ul>
-                        {% for faq in faqs %}
+                        {% for notification in notifications %}
                             <li>
-                                <h3>{{ faq.question }}</h3>
-                                <p>{{ faq.answer }}</p>
+                                <strong>{{ notification.title }}</strong><br>
+                                {{ notification.message }}<br>
+                                <small>{{ notification.created_at }}</small>
                             </li>
+                        {% empty %}
+                            <li>No notifications found.</li>
                         {% endfor %}
                     </ul>
                 </div>

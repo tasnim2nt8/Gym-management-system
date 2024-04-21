@@ -1,0 +1,19 @@
+<!-- view_enquiry.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enquiry List</title>
+</head>
+<body>
+    <h1>Enquiry List</h1>
+    <ul>
+        {% for enquiry in enq %}
+        <li>{{ enquiry.name }} - {{ enquiry.contact }} - {{ enquiry.emailid }} - {{ enquiry.age }} - {{ enquiry.gender }}
+            <a href="{% url 'delete_enquiry' enquiry.id %}">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
